@@ -1,0 +1,6 @@
+#clion
+.idea/
+packSigner
+#vscode
+.vscode/
+.claude/
