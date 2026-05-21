@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"lukechampine.com/blake3"
@@ -70,12 +71,6 @@ and checks the ED25519 signature.`,
 		}
 
 		var fileList []string
-		skipFiles := map[string]bool{
-			".gitignore": true,
-			".public":    true,
-			".sign":      true,
-		}
-
 		err = filepath.Walk(dir, func(path string, info fs.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -83,10 +78,10 @@ and checks the ED25519 signature.`,
 			if info.IsDir() {
 				return nil
 			}
-			rel, _ := filepath.Rel(dir, path)
-			if skipFiles[rel] {
+			if strings.HasPrefix(info.Name(), ".") {
 				return nil
 			}
+			rel, _ := filepath.Rel(dir, path)
 			fileList = append(fileList, rel)
 			return nil
 		})

@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"lukechampine.com/blake3"
@@ -80,11 +81,6 @@ var signCmd = &cobra.Command{
 		}
 		privateKeyEd25519 := ed25519.PrivateKey(privateKeyBytes)
 		var fileList []string
-		skipFiles := map[string]bool{
-			".gitignore": true,
-			".public":    true,
-			".sign":      true,
-		}
 		_ = filepath.Walk(dir, func(path string, info fs.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -93,7 +89,7 @@ var signCmd = &cobra.Command{
 				return nil
 			}
 			rel, _ := filepath.Rel(dir, path)
-			if skipFiles[rel] {
+			if strings.HasPrefix(info.Name(), ".") {
 				return nil
 			}
 			fileList = append(fileList, rel)
