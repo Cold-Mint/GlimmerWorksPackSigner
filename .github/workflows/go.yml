@@ -10,19 +10,32 @@ on:
     branches: [ "master" ]
 
 jobs:
-
-  build:
+  build-linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.26.3'
+      - name: Build
+        run: go build -v ./...
+      - name: Test
+        run: go test -v ./...
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.26.3'
-
-    - name: Build
-      run: go build -v ./...
-
-    - name: Test
-      run: go test -v ./...
+  build-windows:
+    runs-on: ubuntu-latest   # still use Ubuntu for cross-compilation
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.26.3'
+      - name: Build for Windows
+        run: |
+          GOOS=windows GOARCH=amd64 go build -v -o myapp.exe ./...
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-amd64
+          path: myapp.exe
