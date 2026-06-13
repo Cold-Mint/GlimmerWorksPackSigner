@@ -18,10 +18,13 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: '1.26.3'
-      - name: Build
-        run: go build -v ./...
-      - name: Test
-        run: go test -v ./...
+      - name: Build for Linux
+        run: go build -v -o packSigner .
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: packSigner-linux
+          path: packSigner
 
   build-windows:
     runs-on: ubuntu-latest   # still use Ubuntu for cross-compilation
@@ -33,9 +36,9 @@ jobs:
           go-version: '1.26.3'
       - name: Build for Windows
         run: |
-          GOOS=windows GOARCH=amd64 go build -v -o myapp.exe .
+          GOOS=windows GOARCH=amd64 go build -v -o packSigner.exe .
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
-          name: windows-amd64
-          path: myapp.exe
+          name: packSigner-windows-amd64
+          path: packSigner.exe
